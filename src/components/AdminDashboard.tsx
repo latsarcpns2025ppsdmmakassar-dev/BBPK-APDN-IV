@@ -32,7 +32,9 @@ import {
   Check,
   X,
   Calendar,
-  Layers
+  Layers,
+  KeyRound,
+  UserCheck
 } from 'lucide-react';
 import { ScheduleManager } from './ScheduleManager';
 
@@ -49,6 +51,7 @@ interface AdminDashboardProps {
   onUploadScheduleAttachment?: (trainingId: string, attachment: ScheduleAttachment) => void;
   onDeleteScheduleAttachment?: (trainingId: string, attachmentId: string) => void;
   onImportSessions?: (trainingId: string, sessions: TrainingSession[]) => void;
+  onUpdatePassword?: (userId: string, newPass: string) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -63,10 +66,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onDeleteSession,
   onUploadScheduleAttachment,
   onDeleteScheduleAttachment,
-  onImportSessions
+  onImportSessions,
+  onUpdatePassword
 }) => {
-  // Subtab State: 'jadwal' | 'rekap'
-  const [adminSubTab, setAdminSubTab] = useState<'jadwal' | 'rekap'>('jadwal');
+  // Subtab State: 'jadwal' | 'rekap' | 'pengguna'
+  const [adminSubTab, setAdminSubTab] = useState<'jadwal' | 'rekap' | 'pengguna'>('jadwal');
+  const [userSearchQuery, setUserSearchQuery] = useState<string>('');
+  const [passwordChangeTarget, setPasswordChangeTarget] = useState<User | null>(null);
+  const [newAdminPasswordInput, setNewAdminPasswordInput] = useState<string>('');
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState<string>('');
   const [selectedTrainingId, setSelectedTrainingId] = useState<string>(trainings[0]?.id || '');
   const activeTraining = trainings.find((t) => t.id === selectedTrainingId) || trainings[0];
 

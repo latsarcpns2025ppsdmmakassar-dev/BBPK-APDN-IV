@@ -8,7 +8,8 @@ import {
   Code2, 
   Building2, 
   CalendarCheck,
-  LogOut
+  LogOut,
+  KeyRound
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -17,6 +18,7 @@ interface NavbarProps {
   onSelectUser: (user: User) => void;
   onLogout: () => void;
   onOpenSchemaModal: () => void;
+  onOpenChangePasswordModal?: () => void;
   activeTab: 'presensi' | 'evaluasi' | 'dashboard' | 'sertifikat';
   setActiveTab: (tab: 'presensi' | 'evaluasi' | 'dashboard' | 'sertifikat') => void;
 }
@@ -27,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectUser,
   onLogout,
   onOpenSchemaModal,
+  onOpenChangePasswordModal,
   activeTab,
   setActiveTab
 }) => {
@@ -158,40 +161,78 @@ export const Navbar: React.FC<NavbarProps> = ({
               </>
             )}
 
-            {(currentUser.role === 'pengajar' || currentUser.role === 'penguji') && (
+            {currentUser.role === 'pengajar' && (
               <>
+                <button
+                  onClick={() => setActiveTab('presensi')}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTab === 'presensi'
+                      ? 'bg-white text-indigo-900 shadow-xs border border-slate-200/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  <CalendarCheck className="w-4 h-4 text-indigo-600" />
+                  Jadwal Mengajar
+                </button>
                 <button
                   onClick={() => setActiveTab('evaluasi')}
                   className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'evaluasi'
-                      ? 'bg-white text-blue-900 shadow-xs border border-slate-200/60'
+                      ? 'bg-white text-indigo-900 shadow-xs border border-slate-200/60'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
                   <GraduationCap className="w-4 h-4 text-indigo-600" />
-                  Penilaian Peserta (Evaluasi)
+                  Penilaian Peserta
                 </button>
                 <button
                   onClick={() => setActiveTab('dashboard')}
                   className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'dashboard'
-                      ? 'bg-white text-blue-900 shadow-xs border border-slate-200/60'
+                      ? 'bg-white text-emerald-900 shadow-xs border border-slate-200/60'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   Berita Acara (BAP)
                 </button>
+              </>
+            )}
+
+            {currentUser.role === 'penguji' && (
+              <>
                 <button
                   onClick={() => setActiveTab('presensi')}
                   className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'presensi'
-                      ? 'bg-white text-blue-900 shadow-xs border border-slate-200/60'
+                      ? 'bg-white text-purple-900 shadow-xs border border-slate-200/60'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
-                  <CalendarCheck className="w-4 h-4 text-blue-600" />
-                  Jadwal Sesi Saya
+                  <CalendarCheck className="w-4 h-4 text-purple-600" />
+                  Jadwal Ujian / Seminar
+                </button>
+                <button
+                  onClick={() => setActiveTab('evaluasi')}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTab === 'evaluasi'
+                      ? 'bg-white text-purple-900 shadow-xs border border-slate-200/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  <Award className="w-4 h-4 text-purple-600" />
+                  Penilaian Ujian
+                </button>
+                <button
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTab === 'dashboard'
+                      ? 'bg-white text-emerald-900 shadow-xs border border-slate-200/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  Berita Acara (BAP)
                 </button>
               </>
             )}
@@ -202,23 +243,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setActiveTab('dashboard')}
                   className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     activeTab === 'dashboard'
-                      ? 'bg-white text-blue-900 shadow-xs border border-slate-200/60'
+                      ? 'bg-white text-rose-900 shadow-xs border border-slate-200/60'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
                   <ShieldCheck className="w-4 h-4 text-rose-600" />
-                  Kelola Jadwal & Rekap BAP
-                </button>
-                <button
-                  onClick={() => setActiveTab('evaluasi')}
-                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                    activeTab === 'evaluasi'
-                      ? 'bg-white text-blue-900 shadow-xs border border-slate-200/60'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4 text-indigo-600" />
-                  Evaluasi Dua Arah
+                  Kelola Jadwal & Program
                 </button>
                 <button
                   onClick={() => setActiveTab('presensi')}
@@ -229,14 +259,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <CalendarCheck className="w-4 h-4 text-blue-600" />
-                  Supervisi Presensi
+                  Rekap Presensi & BAP
+                </button>
+                <button
+                  onClick={() => setActiveTab('evaluasi')}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTab === 'evaluasi'
+                      ? 'bg-white text-indigo-900 shadow-xs border border-slate-200/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  <GraduationCap className="w-4 h-4 text-indigo-600" />
+                  Supervisi Evaluasi
                 </button>
               </>
             )}
           </nav>
 
-          {/* User Profile Badge & Ganti Akun */}
-          <div className="flex items-center gap-3">
+          {/* User Profile Badge & Ganti Akun & Ubah Password */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="text-right hidden sm:block">
               <div className="text-xs font-bold text-slate-800 line-clamp-1">{currentUser.name}</div>
               <div className="text-[11px] text-slate-500 flex items-center justify-end gap-1">
@@ -248,11 +289,24 @@ export const Navbar: React.FC<NavbarProps> = ({
               <CurrentIcon className="w-4 h-4" />
             </div>
 
+            {/* Tombol Ubah Password */}
+            {onOpenChangePasswordModal && (
+              <button
+                type="button"
+                onClick={onOpenChangePasswordModal}
+                className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 hover:border-amber-300 bg-amber-50/60 hover:bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs"
+                title="Ubah Kata Sandi Akun Anda"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+                <span className="hidden md:inline">Ubah Sandi</span>
+              </button>
+            )}
+
             {/* Tombol Ganti Akun / Logout */}
             <button
               type="button"
               onClick={onLogout}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-rose-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-rose-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs"
               title="Keluar / Ganti Peran & Akun Pengguna"
             >
               <LogOut className="w-3.5 h-3.5 text-slate-500 group-hover:text-rose-600" />
@@ -268,7 +322,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => setActiveTab('presensi')}
                 className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
-                  activeTab === 'presensi' ? 'bg-blue-800 text-white' : 'text-slate-600'
+                  activeTab === 'presensi' ? 'bg-emerald-700 text-white' : 'text-slate-600'
                 }`}
               >
                 Presensi
@@ -290,23 +344,69 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Sertifikat
               </button>
             </>
+          ) : currentUser.role === 'pengajar' ? (
+            <>
+              <button
+                onClick={() => setActiveTab('presensi')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'presensi' ? 'bg-indigo-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                Jadwal
+              </button>
+              <button
+                onClick={() => setActiveTab('evaluasi')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'evaluasi' ? 'bg-indigo-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                Nilai Peserta
+              </button>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'dashboard' ? 'bg-emerald-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                BAP
+              </button>
+            </>
+          ) : currentUser.role === 'penguji' ? (
+            <>
+              <button
+                onClick={() => setActiveTab('presensi')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'presensi' ? 'bg-purple-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                Jadwal Ujian
+              </button>
+              <button
+                onClick={() => setActiveTab('evaluasi')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'evaluasi' ? 'bg-purple-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                Nilai Ujian
+              </button>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'dashboard' ? 'bg-emerald-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                BAP
+              </button>
+            </>
           ) : (
             <>
               <button
                 onClick={() => setActiveTab('dashboard')}
                 className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
-                  activeTab === 'dashboard' ? 'bg-blue-800 text-white' : 'text-slate-600'
+                  activeTab === 'dashboard' ? 'bg-rose-700 text-white' : 'text-slate-600'
                 }`}
               >
-                Dashboard
-              </button>
-              <button
-                onClick={() => setActiveTab('evaluasi')}
-                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
-                  activeTab === 'evaluasi' ? 'bg-blue-800 text-white' : 'text-slate-600'
-                }`}
-              >
-                Evaluasi
+                Kelola Jadwal
               </button>
               <button
                 onClick={() => setActiveTab('presensi')}
@@ -314,7 +414,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   activeTab === 'presensi' ? 'bg-blue-800 text-white' : 'text-slate-600'
                 }`}
               >
-                Jadwal
+                Rekap BAP
+              </button>
+              <button
+                onClick={() => setActiveTab('evaluasi')}
+                className={`flex-1 py-1.5 rounded-lg font-semibold text-center ${
+                  activeTab === 'evaluasi' ? 'bg-indigo-700 text-white' : 'text-slate-600'
+                }`}
+              >
+                Supervisi
               </button>
             </>
           )}

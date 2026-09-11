@@ -100,9 +100,17 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
   }, [selectedTrainingId, activeTraining, currentUser.id]);
 
   // Tab Mode (Evaluasi Pengajar vs Evaluasi Peserta)
-  const [activeTabMode, setActiveTabMode] = useState<'evaluasiPengajar' | 'evaluasiPeserta'>(
-    currentUser.role === 'peserta' ? 'evaluasiPengajar' : 'evaluasiPeserta'
-  );
+  const defaultMode = currentUser.role === 'peserta' ? 'evaluasiPengajar' : 'evaluasiPeserta';
+  const [activeTabMode, setActiveTabMode] = useState<'evaluasiPengajar' | 'evaluasiPeserta'>(defaultMode);
+
+  // Sync mode if currentUser changes
+  React.useEffect(() => {
+    if (currentUser.role === 'peserta') {
+      setActiveTabMode('evaluasiPengajar');
+    } else if (currentUser.role === 'pengajar' || currentUser.role === 'penguji') {
+      setActiveTabMode('evaluasiPeserta');
+    }
+  }, [currentUser.role]);
 
   // ==========================================
   // 1. EVALUASI PENGAJAR OLEH PESERTA
@@ -290,41 +298,66 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-indigo-50 text-indigo-700">
+              <span className={`p-2 rounded-xl ${
+                currentUser.role === 'peserta' ? 'bg-emerald-100 text-emerald-800' :
+                currentUser.role === 'pengajar' ? 'bg-indigo-100 text-indigo-800' :
+                currentUser.role === 'penguji' ? 'bg-purple-100 text-purple-800' :
+                'bg-rose-100 text-rose-800'
+              }`}>
                 <GraduationCap className="w-5 h-5" />
               </span>
               <h1 className="text-xl font-bold text-slate-900">
-                Evaluasi Dua Arah Pelatihan ASN
+                {currentUser.role === 'peserta' && 'Evaluasi Kinerja Widyaiswara / Pengajar'}
+                {currentUser.role === 'pengajar' && 'Penilaian Sikap & Kinerja Peserta (Widyaiswara)'}
+                {currentUser.role === 'penguji' && 'Penilaian Seminar & Ujian Peserta (Penguji)'}
+                {currentUser.role === 'admin' && 'Supervisi Evaluasi Dua Arah Pelatihan'}
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Peserta menilai kinerja fasilitator • Widyaiswara/Penguji menilai capaian kompetensi peserta.
+              {currentUser.role === 'peserta' && 'Beri penilaian objektif terhadap penguasaan materi dan metode fasilitator pada sesi yang Anda ikuti.'}
+              {currentUser.role === 'pengajar' && 'Beri nilai sikap, keaktifan diskusi, dan tugas peserta untuk kelengkapan Berita Acara (BAP).'}
+              {currentUser.role === 'penguji' && 'Beri nilai penguasaan substansi, argumentasi tanya jawab, dan catatan perbaikan bagi peserta seminar.'}
+              {currentUser.role === 'admin' && 'Supervisi hasil penilaian pengajar oleh peserta dan nilai peserta oleh pengajar/penguji.'}
             </p>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="flex bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 self-start">
-            <button
-              onClick={() => setActiveTabMode('evaluasiPengajar')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeTabMode === 'evaluasiPengajar'
-                  ? 'bg-white text-indigo-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              1. Evaluasi Pengajar (Oleh Peserta)
-            </button>
-            <button
-              onClick={() => setActiveTabMode('evaluasiPeserta')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeTabMode === 'evaluasiPeserta'
-                  ? 'bg-white text-indigo-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              2. Penilaian Peserta (Oleh Pengajar/Penguji)
-            </button>
-          </div>
+          {/* Mode Switcher Tabs HANYA untuk Admin */}
+          {currentUser.role === 'admin' ? (
+            <div className="flex bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 self-start">
+              <button
+                type="button"
+                onClick={() => setActiveTabMode('evaluasiPengajar')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeTabMode === 'evaluasiPengajar'
+                    ? 'bg-white text-indigo-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                1. Evaluasi Pengajar (Peserta)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTabMode('evaluasiPeserta')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeTabMode === 'evaluasiPeserta'
+                    ? 'bg-white text-indigo-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                2. Penilaian Peserta (Pengajar/Penguji)
+              </button>
+            </div>
+          ) : (
+            <div className={`text-xs px-3 py-1.5 rounded-xl font-bold border self-start ${
+              currentUser.role === 'peserta' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+              currentUser.role === 'pengajar' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' :
+              'bg-purple-50 text-purple-800 border-purple-200'
+            }`}>
+              {currentUser.role === 'peserta' && 'Hak Akses: Peserta Pelatihan'}
+              {currentUser.role === 'pengajar' && 'Hak Akses: Widyaiswara Penilai'}
+              {currentUser.role === 'penguji' && 'Hak Akses: Penguji Evaluasi'}
+            </div>
+          )}
         </div>
 
         {/* Filter Sesi */}
