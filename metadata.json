@@ -1,0 +1,11 @@
+{
+  "name": "SIPEKA - Sistem Presensi & Evaluasi Pelatihan ASN",
+  "description": "Sistem Terintegrasi Presensi & Evaluasi Pelatihan Terpadu ASN dengan gatekeeping access control, dynamic QR, geofencing GPS, digital signature canvas, live selfie, dan modul evaluasi dua arah.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
